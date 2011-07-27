@@ -12,7 +12,8 @@
 (defparameter *login-form*
   `(("userName" . ,*login*)
     ("validLoginAttempt" . "1")
-    ("passWord" . ,*password*)))
+    ("passWord" . ,*password*)
+    ("robot" . "1")))
 (defparameter *mygames-url* "http://www.online-go.com/games/mygames.php")
 
 (defparameter *myturn-xpath* "//a[@class='main'][@href='/games/mygames.php']")
@@ -65,10 +66,7 @@
                                                        (format nil "Vous aves ~a message~:p non lus." unread))))))
                           :output t :error :output))))
                 (format t "Main loop aborted by user.")
-                (finish))
-              ;; Here we likely need to relogin, since onlinge-go.com acceptes only one connection at a time.
-              ;; This is handled by (string= "/index.php") clause earlier, so let's just wait until the next poll happens.
-              ))))
+                (finish))))))
     (let ((timeout (if (listp #1=*polling-interval*)
                        (+ (first #1#) (random (1+ (- (second #1#) (first #1#)))))
                        #1#)))
