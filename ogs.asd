@@ -4,7 +4,8 @@
   :serial t
   :depends-on (#:drakma
                #:cl-libxml2
-               #:iterate)
+               #:iterate
+               #:external-program)
   :components ((:file "package")
                (:file "ogs")))
 

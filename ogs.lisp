@@ -34,7 +34,12 @@
                          (1+ (position #\( str))
                          (position #\) str))))
 
-(defun main-loop ()
+(defun run-program-exit-code (program args)
+  "Run a program, wait for it to exit and return the exit code"
+  (second (multiple-value-list (external-program:run program args))))
+
+(defun main-loop (&optional argv)
+  (declare (ignore argv))
   (format t "Logging in…~%")
   (login)
   (iter
@@ -53,18 +58,15 @@
             (unless (zerop (+ myturn unread))
               (format t "Displaying notification…~%")
               (unless (zerop
-                       (sb-ext:process-exit-code
-                        (sb-ext:process-wait
-                         (sb-ext:run-program
-                          "/usr/bin/kdialog"
-                          (list "--yes-label" "Continuer" "--no-label" "Annuler" "--title" "OGS" "--yesno"
-                                (format nil "~{~a~^~%~}"
-                                        (delete nil (list
-                                                     (when (plusp myturn)
-                                                       (format nil "C'est à vous de jouer dans ~a partie~:p." myturn))
-                                                     (when (plusp unread)
-                                                       (format nil "Vous aves ~a message~:p non lus." unread))))))
-                          :output t :error :output))))
+                       (run-program-exit-code
+                        "/usr/bin/kdialog"
+                        (list "--yes-label" "Continuer" "--no-label" "Annuler" "--title" "OGS" "--yesno"
+                              (format nil "~{~a~^~%~}"
+                                      (delete nil (list
+                                                   (when (plusp myturn)
+                                                     (format nil "C'est à vous de jouer dans ~a partie~:p." myturn))
+                                                   (when (plusp unread)
+                                                     (format nil "Vous aves ~a message~:p non lus." unread))))))))
                 (format t "Main loop aborted by user.")
                 (finish))))))
     (let ((timeout (if (listp #1=*polling-interval*)
